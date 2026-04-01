@@ -1,855 +1,694 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="theme-color" content="#0f203b" />
-  <link rel="manifest" href="manifest.json" />
-
-  <!-- Google Fonts: IBM Plex Sans -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
-
-  <style>
-    :root {
-      /* Navy-Farben */
-      --qpanel: rgba(10, 20, 60, 0.15);
-      --qfield: rgba(105, 105, 105, 1);
-      --qborder: #223355;
-      /* Button-Grundfarben */
-      --btn-bg: #34495E;
-      --btn-bg-hover: #3f5872;
-      --btn-border: #777777;
-      /* Glow-Farben */
-      --glow-primary: rgba(80, 160, 255, 0.9);   /* Blau für Q-Checker */
-      --glow-print:   rgba(255, 210, 120, 0.9);  /* Gelb/Orange für Drucken */
-    }
-
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      font-family: "IBM Plex Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      font-size: 23px;
-      line-height: 1.4;
-      color: #223355;
-    }
-
-    /* Hintergrundlogo */
-    .bg {
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      background: url("Logos.png") center center / 66% auto no-repeat;
-    }
-
-    /* App-Container */
-    .app {
-      position: relative;
-      z-index: 4;
-      height: 100%;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      background: rgba(0, 0, 0, 0.35);
-    }
-
-    .page {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px 20px 40px 20px;
-      box-sizing: border-box;
-    }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .logo-box {
-      min-width: 120px;
-      min-height: 40px;
-    }
-
-    .logo-box img {
-      max-height: 60px;
-      max-width: 180px;
-      display: block;
-    }
-
-    h1#titleMain {
-      margin: 10px 0 0 0;
-      font-size: 84px;
-      letter-spacing: 0.05em;
-      color: #ffffff;
-    }
-
-    .subtitle-supplier {
-      font-size: 41px;
-      margin-top: 4px;
-      font-weight: 500;
-      color: #ffffff;
-    }
-
-    /* Panels / Konfig-Bereiche / Ergebnisboxen */
-    .controls,
-    .config-panel,
-    .dblock,
-    .result-box {
-      background-color: var(--qpanel);
-      border: 1px solid var(--qborder);
-      border-radius: 14px;
-      color: #ffffff;
-      box-shadow: 0 12px 6px rgba(105, 105, 105, 0.96);
-    }
-
-    .controls,
-    .config-panel {
-      margin-top: 20px;
-      padding: 12px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px 24px;
-      align-items: flex-end;
-    }
-
-    .controls div,
-    .config-panel div {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      font-size: 27px;
-    }
-
-    label {
-      font-size: 17px;
-      margin-top: 8px;
-      display: block;
-    }
-
-    /* Eingabefelder / Pulldowns */
-    select,
-    input[type="text"],
-    input[type="email"],
-    input[type="url"],
-    textarea {
-      padding: 5px 8px;
-      font-size: 17px;
-      border-radius: 9px;
-      border: 1px solid var(--qborder);
-      background-color: var(--qfield);
-      color: #ffffff;
-      box-sizing: border-box;
-      font-family: "IBM Plex Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
-    }
-
-    textarea {
-      width: 100%;
-      min-height: 110px;
-      resize: vertical;
-    }
-
-    input[type="file"] {
-      display: none;
-    }
-
-    /* Runde, schattierte Buttons (Basis) */
-    button {
-      cursor: pointer;
-      display: inline-block;
-      padding: 10px 28px;
-      font-size: 18px;
-      font-family: inherit;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: #f2f2f2;
-      background: linear-gradient(135deg, #3f5872, var(--btn-bg));
-      border: 1px solid var(--btn-border);
-      border-radius: 999px; /* pill / rund */
-      position: relative;
-      top: 0;
-      outline: none;
-      user-select: none;
-      transition:
-        background 0.15s ease,
-        transform 0.1s ease,
-        box-shadow 0.1s ease;
-      box-shadow:
-        0 6px 12px rgba(0, 0, 0, 0.4);
-      margin-bottom: 6px;
-    }
-
-    /* Hover: etwas heller und leicht angehoben */
-    button:hover {
-      background: linear-gradient(135deg, #526c88, var(--btn-bg-hover));
-      box-shadow:
-        0 8px 16px rgba(0, 0, 0, 0.45);
-      transform: translateY(-1px);
-    }
-
-    /* Tastatur-Fokus */
-    button:focus-visible {
-      outline: 2px solid #9fc5ff;
-      outline-offset: 3px;
-    }
-
-    /* Basis-Active (leicht einsinken) */
-    button:active {
-      transform: translateY(1px);
-      box-shadow:
-        0 4px 8px rgba(0, 0, 0, 0.5);
-    }
-
-    /* Q-Checker: blauer Glow beim Klick */
-    .btn-primary:active {
-      box-shadow:
-        0 0 0 2px rgba(255, 255, 255, 0.5),
-        0 0 18px var(--glow-primary);
-    }
-
-    /* Drucken: gelb/oranger Glow beim Klick */
-    .btn-print:active {
-      box-shadow:
-        0 0 0 2px rgba(255, 255, 255, 0.5),
-        0 0 18px var(--glow-print);
-    }
-
-    @media print {
-      button {
-        display: none !important;
-      }
-    }
-
-    .main {
-      margin-top: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .dblock {
-      margin-top: 16px;
-      padding: 12px;
-    }
-
-    .dblock h2 {
-      margin-top: 0;
-      font-size: 20px;
-    }
-
-    .result-box {
-      padding: 12px;
-      font-size: 18px;
-    }
-
-    .ampel-rot {
-      color: #ff6f6f;
-      font-weight: bold;
-    }
-
-    .ampel-gelb {
-      color: #ffd54f;
-      font-weight: bold;
-    }
-
-    .ampel-gruen {
-      color: #80e27e;
-      font-weight: bold;
-    }
-
-    @media print {
-      body {
-        background-color: #ffffff;
-        color: #000000;
-      }
-
-      .bg {
-        display: none;
-      }
-
-      .app {
-        background: #ffffff;
-        overflow: visible;
-      }
-
-      .page {
-        background-color: #ffffff;
-        padding: 10px;
-        max-width: 100%;
-      }
-
-      .no-print {
-        display: none !important;
-      }
-
-      .header {
-        border-bottom: 2px solid #000000;
-        padding-bottom: 10px;
-        margin-bottom: 20px;
-      }
-
-      .logo-box img {
-        max-height: 40px;
-      }
-
-      h1#titleMain {
-        color: #000000;
-        font-size: 23px;
-      }
-
-      .subtitle-supplier {
-        font-size: 18px;
-        color: #000000;
-      }
-
-      .dblock {
-        background-color: #ffffff;
-        border: 1px solid #cccccc;
-        page-break-inside: avoid;
-        margin-top: 10px;
-        padding: 10px;
-      }
-
-      .dblock h2 {
-        color: #000000;
-        border-bottom: 1px solid #999999;
-        padding-bottom: 4px;
-      }
-
-      textarea,
-      select,
-      input {
-        border: 1px solid #999999;
-        background-color: #f5f5f5;
-        color: #000000;
-      }
-
-      .result-box {
-        background-color: #f5f5f5;
-        border: 1px solid #999999;
-        page-break-inside: avoid;
-      }
-
-      .ampel-rot {
-        color: #cc0000;
-      }
-
-      .ampel-gelb {
-        color: #cc8800;
-      }
-
-      .ampel-gruen {
-        color: #008800;
-      }
-    }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>8D Creator</title>
+  <link rel="stylesheet" href="design.css">
 </head>
-
 <body>
-  <div class="bg"></div>
-
-  <div class="app">
-    <div class="page">
-      <div class="header">
-        <div>
-          <h1 id="titleMain">8D Report Creator</h1>
-          <p class="subtitle-supplier">Lieferanten‑8D</p>
-        </div>
-        <div class="logo-box" id="customerLogoBox"></div>
+  <div class="page">
+    <div class="header">
+      <div>
+        <h1 id="titleMain">8D Creator</h1>
+        <p style="font-size:13px;margin-top:4px;">Supplier 8D</p>
       </div>
+      <div class="logo-box" id="customerLogoBox"></div>
+    </div>
 
-      <!-- Kunden-Konfiguration -->
-      <div class="config-panel no-print">
-        <div>
-          <label for="customerName">Kundenname</label>
-          <input type="text" id="customerName" placeholder="z. B. Premium‑OEM X" />
-        </div>
-
-        <div>
-          <label for="customerLogoUrl">Logo‑URL</label>
-          <input type="url" id="customerLogoUrl" placeholder="https://...logo.png" />
-        </div>
-
-        <div>
-          <label for="customerWebUrl">Webadresse</label>
-          <input type="url" id="customerWebUrl" placeholder="https://www.kunde.de" />
-        </div>
-
-        <div>
-          <label for="customerEmail">Kontakt‑E‑Mail</label>
-          <input type="email" id="customerEmail" placeholder="quality@kunde.de" />
-        </div>
-
-        <div>
-          <label for="severity">Schweregrad</label>
-          <select id="severity">
-            <option value="">– wählen –</option>
-            <option value="S1">S1 – gering (kein Kunde betroffen)</option>
-            <option value="S2">S2 – mittel (Kunde betroffen, keine Sicherheit)</option>
-            <option value="S3">S3 – hoch (Linienstillstand / Feld)</option>
-            <option value="S4">S4 – kritisch (Sicherheit / Gesetz)</option>
-          </select>
-        </div>
-
-        <div>
-          <label for="customTitle">Bauteil / Produkt</label>
-          <input type="text" id="customTitle" placeholder="z. B. Gehäuse, Sensorhalter" />
-        </div>
+    <div class="config-panel no-print compact-header">
+      <div>
+        <label for="customerName">Kundenname / Customer name <span class="help-icon" data-help-key="customerName">?</span></label>
+        <input type="text" id="customerName" placeholder="z.B. Premium‑OEM X">
       </div>
-
-      <!-- Steuerleiste: nur Q-Checker + Drucken -->
-      <div class="controls no-print">
-        <div>
-          <label for="language">Sprache</label>
-          <select id="language" name="language" onchange="applyLanguage()">
-            <option value="de">Deutsch</option>
-          </select>
-        </div>
-
-        <div>
-          <label for="fertigungstechnik">Fertigungstechnik</label>
-          <select id="fertigungstechnik" name="fertigungstechnik" onchange="populatePullDownsForFt()">
-            <option value="">– bitte wählen –</option>
-            <option value="giessen">Gießen</option>
-            <option value="zerspanen">Zerspanen</option>
-            <option value="stanzen">Stanzen</option>
-          </select>
-        </div>
-
-        <div>
-          <label for="level">Level</label>
-          <select id="level" name="level" onchange="populatePullDownsForFt()">
-            <option value="entry">Basis</option>
-            <option value="advanced">Erweitert</option>
-            <option value="automotive">Automotive</option>
-          </select>
-        </div>
-
-        <div>
-          <label>&nbsp;</label>
-          <button type="button" class="btn-primary" onclick="checkCurrentDocument()">
-            Q‑Checker aktuelles Dokument
-          </button>
-        </div>
-
-        <div>
-          <label>&nbsp;</label>
-          <button type="button" class="btn-print" onclick="window.print()">
-            Drucken / PDF
-          </button>
-        </div>
+      <div>
+        <label for="customerLogoUrl">Logo‑URL <span class="help-icon" data-help-key="customerLogoUrl">?</span></label>
+        <input type="url" id="customerLogoUrl" placeholder="https://.../logo.png">
       </div>
+      <div>
+        <label for="severity">Schweregrad / Severity <span class="help-icon" data-help-key="severity">?</span></label>
+        <select id="severity">
+          <option value="">– wählen –</option>
+          <option value="S1">S1 – gering</option>
+          <option value="S2">S2 – mittel</option>
+          <option value="S3">S3 – hoch</option>
+          <option value="S4">S4 – kritisch</option>
+        </select>
+		</
 
-      <!-- Hauptinhalt -->
-      <div class="main">
-        <div class="result-box" id="resultSummary"></div>
-
-        <div class="dblock">
-          <h2>D2 – Problembeschreibung</h2>
-          <label for="d2select" class="no-print">Problembeschreibung aus Vorschlag wählen</label>
-          <select id="d2select" class="no-print" onchange="insertHintIntoField('d2select','d2text')">
-            <option value="">– Vorschlag auswählen –</option>
-          </select>
-          <label for="d2text">Strukturierte Problembeschreibung (Wer / Was / Wo / Wann / Wie viel)</label>
-          <textarea id="d2text" placeholder="Beschreibe das Problem mit 5W2H (IS / IS NOT) möglichst konkret..."></textarea>
-        </div>
-
-        <div class="dblock">
-          <h2>D3 – Eindämmmaßnahmen</h2>
-          <label for="d3select" class="no-print">Eindämmmaßnahme aus Vorschlag wählen</label>
-          <select id="d3select" class="no-print" onchange="insertHintIntoField('d3select','d3text')">
-            <option value="">– Vorschlag auswählen –</option>
-          </select>
-          <label for="d3text">Eindämmmaßnahmen (Interim Containment)</label>
-          <textarea id="d3text" placeholder="Welche Sofortmaßnahmen verhindern weitere fehlerhafte Teile beim Kunden?..."></textarea>
-        </div>
-
-        <div class="dblock">
-          <h2>D4 – Ursache (Occurrence)</h2>
-          <label for="d4select" class="no-print">Thema / Ursache aus Vorschlag wählen</label>
-          <select id="d4select" class="no-print" onchange="insertHintIntoField('d4select','d4text')">
-            <option value="">– Vorschlag auswählen –</option>
-          </select>
-          <label for="d4text">Beschreibung der technischen Ursache (Root Cause)</label>
-          <textarea id="d4text" placeholder="Beschreibe die technische Ursache möglichst konkret..."></textarea>
-        </div>
-
-        <div class="dblock">
-          <h2>D5 – Abstellmaßnahmen</h2>
-          <label for="d5select" class="no-print">Maßnahmen aus Vorschlag wählen</label>
-          <select id="d5select" class="no-print" onchange="insertHintIntoField('d5select','d5text')">
-            <option value="">– Vorschlag auswählen –</option>
-          </select>
-          <label for="d5text">Maßnahmen zur Beseitigung der Ursache</label>
-          <textarea id="d5text" placeholder="Konkrete Maßnahmen aus der verifizierten Ursache ableiten..."></textarea>
-        </div>
-
-        <div class="dblock">
-          <h2>D6 – Wirksamkeitsnachweis</h2>
-          <label for="d6select" class="no-print">Nachweis aus Vorschlag wählen</label>
-          <select id="d6select" class="no-print" onchange="insertHintIntoField('d6select','d6text')">
-            <option value="">– Vorschlag auswählen –</option>
-          </select>
-          <label for="d6text">Wirksamkeit / Daten / Beobachtungszeitraum</label>
-          <textarea id="d6text" placeholder="Welche Daten und Zeiträume zeigen, dass der Fehler nicht mehr auftritt?..."></textarea>
-        </div>
-
-        <div class="dblock">
-          <h2>D7 – Wiederholvermeidung</h2>
-          <label for="d7select" class="no-print">Systemmaßnahmen aus Vorschlag wählen</label>
-          <select id="d7select" class="no-print" onchange="insertHintIntoField('d7select','d7text')">
-            <option value="">– Vorschlag auswählen –</option>
-          </select>
-          <label for="d7text">Systemmaßnahmen / Dokumente / Schulungen</label>
-          <textarea id="d7text" placeholder="Welche Systemmaßnahmen verhindern eine Wiederholung (Dokumente, FMEA, Schulungen)?..."></textarea>
-        </div>
-
-        <div class="result-box no-print" id="helpBubble" style="display:none;"></div>
+    <div class="controls no-print compact-controls">
+      <div>
+        <label for="language">Sprache / Language <span class="help-icon" data-help-key="language">?</span></label>
+        <select id="language" name="language" onchange="applyLanguage()">
+          <option value="de">Deutsch</option>
+          <option value="en">English</option>
+        </select>
       </div>
+      <div>
+        <label for="fertigungstechnik">Fertigungstechnik / Manufacturing <span class="help-icon" data-help-key="fertigungstechnik">?</span></label>
+        <select id="fertigungstechnik" name="fertigungstechnik">
+          <option value="">– bitte wählen / please select –</option>
+          <option value="giessen">Gießen</option>
+          <option value="zerspanen">Zerspanen</option>
+          <option value="schmieden">Schmieden</option>
+          <option value="montage">Montage</option>
+          <option value="kunststoffspritzguss">Kunststoffspritzguss</option>
+          <option value="aludruckguss">Alu‑Druckguss</option>
+        </select>
+      </div>
+      <div>
+        <label for="level">Level <span class="help-icon" data-help-key="level">?</span></label>
+        <select id="level" name="level">
+          <option value="entry">Entry</option>
+          <option value="advanced">Advanced</option>
+          <option value="automotive">Automotive</option>
+        </select>
+      </div>
+      <div class="button-cell">
+        <label>&nbsp;</label>
+        <button type="button" class="btn-compact" onclick="checkCurrentDocument()">Q‑Checker aktuelles Dokument</button>
+      </div>
+      <div class="button-cell">
+        <label>&nbsp;</label>
+        <button type="button" class="btn-compact" onclick="window.print()">📄 Drucken / PDF</button>
+      </div>
+    </div>
+
+    <div class="dblock">
+      <h2>D2 – Problembeschreibung</h2>
+      <label for="d2_select" class="no-print">Problembeschreibung aus Vorschlag wählen:</label>
+      <select id="d2_select" onchange="insertHintIntoField('d2_select','d2_text')" class="no-print">
+        <option value="">– Vorschlag auswählen –</option>
+      </select>
+      <label for="d2_text">Strukturierte Problembeschreibung (Wer/Was/Wo/Wann/Wie viel):</label>
+      <textarea id="d2_text" placeholder="Beschreibe das Problem mit 5W2H / IS-IS-NOT möglichst konkret..."></textarea>
+    </div>
+
+    <div class="dblock">
+      <h2>D3 – Eindämmmaßnahmen (Containment)</h2>
+      <label for="d3_select" class="no-print">Eindämmmaßnahme aus Vorschlag wählen:</label>
+      <select id="d3_select" onchange="insertHintIntoField('d3_select','d3_text')" class="no-print">
+        <option value="">– Vorschlag auswählen –</option>
+      </select>
+      <label for="d3_text">Eindämmmaßnahmen / Interim Containment Actions:</label>
+      <textarea id="d3_text" placeholder="Welche Sofortmaßnahmen verhindern weitere fehlerhafte Teile beim Kunden?..."></textarea>
+    </div>
+
+    <div class="dblock">
+      <h2>D4 – Ursache (Occurrence)</h2>
+      <label for="d4_select" class="no-print">Thema / Ursache aus Vorschlag wählen:</label>
+      <select id="d4_select" onchange="insertHintIntoField('d4_select','d4_text')" class="no-print">
+        <option value="">– Vorschlag auswählen –</option>
+      </select>
+      <label for="d4_text">Beschreibung technische Root Cause:</label>
+      <textarea id="d4_text" placeholder="Beschreibe die technische Ursache (Occurrence) möglichst konkret..."></textarea>
+    </div>
+
+    <div class="dblock">
+      <h2>D5 – Abstellmaßnahmen</h2>
+      <label for="d5_select" class="no-print">Maßnahmen aus Vorschlag wählen:</label>
+      <select id="d5_select" onchange="insertHintIntoField('d5_select','d5_text')" class="no-print">
+        <option value="">– Vorschlag auswählen –</option>
+      </select>
+      <label for="d5_text">Maßnahmen zur Beseitigung der Ursache:</label>
+      <textarea id="d5_text" placeholder="Konkrete Maßnahmen aus der verifizierten Ursache ableiten..."></textarea>
+    </div>
+
+    <div class="dblock">
+      <h2>D6 – Wirksamkeitsnachweis</h2>
+      <label for="d6_select" class="no-print">Nachweis aus Vorschlag wählen:</label>
+      <select id="d6_select" onchange="insertHintIntoField('d6_select','d6_text')" class="no-print">
+        <option value="">– Vorschlag auswählen –</option>
+      </select>
+      <label for="d6_text">Wirksamkeit / Daten / Beobachtungszeitraum:</label>
+      <textarea id="d6_text" placeholder="Welche Daten / Zeiträume zeigen, dass der Fehler nicht mehr auftritt?..."></textarea>
+    </div>
+
+    <div class="dblock">
+      <h2>D7 – Wiederholvermeidung</h2>
+      <label for="d7_select" class="no-print">Systemmaßnahmen aus Vorschlag wählen:</label>
+      <select id="d7_select" onchange="insertHintIntoField('d7_select','d7_text')" class="no-print">
+        <option value="">– Vorschlag auswählen –</option>
+      </select>
+      <label for="d7_text">Systemmaßnahmen / Dokumente / Schulungen:</label>
+      <textarea id="d7_text" placeholder="Welche Systemmaßnahmen verhindern eine Wiederholung (Dokumente, FMEA, Schulungen)?..."></textarea>
+    </div>
+
+    <div class="main">
+      <div class="result-box" id="resultSummary"></div>
+      <div class="result-box no-print" id="helpBubble" style="display:none;"></div>
     </div>
   </div>
 
   <script>
-    /* ---------------- Profile Gießen / Zerspanen / Stanzen ---------------- */
-
-    function makeGiessenProfile(title) {
+    function makeGenericProfile(title) {
       return {
         d2: [
-          `Beim ${title} wurden Lunker, Poren oder Einschlüsse in der Gussstruktur festgestellt.`,
-          `Am ${title} treten Maßabweichungen an Funktionsflächen und Passungen nach dem Gießen auf.`,
-          `Oberflächen des ${title} zeigen Risse, kalte Fließstellen oder Binde-/Kaltläufe.`,
-          `Fehlerbilder am ${title} häufen sich bei bestimmten Formnestern, Werkzeugnummern oder Gießlinien.`,
-          `Druck- oder Dichtheitsprüfungen des ${title} zeigen erhöhte Ausfallraten.`,
-          `Abweichungen am ${title} korrelieren mit Ofen, Schmelzcharge oder Gießparametern.`,
-          `Der Nacharbeitsaufwand (Fräsen, Schleifen) am ${title} ist überdurchschnittlich hoch.`,
-          `Fehler am ${title} wurden durch Schliffbilder, Röntgen- oder CT-Aufnahmen bestätigt.`
+          `Fehler, Maßabweichung oder Funktionsabweichung an ${title} gemeldet.`,
+          `Betroffene Teile zeigen Abweichung an Form, Maß, Funktion oder Ausführung.`,
+          `Fehler tritt in Serienproduktion oder beim Kunden auf.`,
+          `Problem betrifft bestimmte Chargen, Schichten, Maschinen oder Lose.`,
+          `Bereits ausgelieferte Teile, Lagerbestände oder Transporte können betroffen sein.`,
+          `Fehlerbild ist über Sichtprüfung, Messung oder Funktionsprüfung nachvollziehbar.`,
+          `Bereits durchgeführte Sortierung brachte keine nachhaltige Lösung.`,
+          `Auffälligkeit zeigt sich bei bestimmten Varianten oder Produktionsbedingungen.`,
+          `Rückverfolgbarkeit auf Charge, Maschine, Linie oder Schicht ist erforderlich.`,
+          `Auswirkung: Reklamation, Nacharbeit, Ausschuss oder Funktionsverlust.`
         ],
         d3: [
-          `Sofortige Sperrung der betroffenen Gusschargen des ${title} und eindeutige Kennzeichnung.`,
-          `100-%-Sortieraktion der betroffenen Lose anhand definierter Röntgen-, Sicht- und Maßkriterien.`,
-          `Trennung der Produktion des ${title} nach Ofen, Formnest und Werkzeugnummer.`,
-          `Einführung zusätzlicher Stichproben an kritischen Merkmalen (z. B. Dichtflächen, Wanddicken).`,
-          `Beweissicherung durch Rückhalteteile, Fotos und vollständige Dokumentation der Prozessdaten.`,
-          `Information an Planung und interne Logistik zur Vermeidung weiterer Auslieferungen defekter Teile.`,
-          `Vorübergehende Verschärfung der Prozess- und Endprüfung für das ${title}.`,
-          `Stoppen nicht freigegebener Prozessänderungen bis zur vollständigen Ursachenklärung.`
+          `Sofortige Sperrung und Kennzeichnung aller Bestände im Werk.`,
+          `100%-Kontrolle der betroffenen Merkmale.`,
+          `Sperrung von Lager, Zwischenlager und Versandbeständen.`,
+          `Kundeninformation mit Risikobewertung und Sofortmaßnahmen.`,
+          `Sortieraktion an betroffenen Losen, Schichten oder Chargen.`,
+          `Freigabe nur nach dokumentierter Zusatzprüfung.`,
+          `Temporäre Verschärfung des Prüfplans an kritischen Merkmalen.`,
+          `Prüfung von Prozess, Werkzeug, Vorrichtung oder Materialzustand.`,
+          `Quarantäne verdächtiger Teile und Beweissicherung.`,
+          `Eindämmung bleibt aktiv bis Ursache und Maßnahmen verifiziert sind.`
         ],
         d4: [
-          `Ungünstige Gießparameter (Temperatur, Gießgeschwindigkeit, Formfüllung) verursachen Porosität im ${title}.`,
-          `Unzureichende Entlüftung oder ein ungünstiges Anschnitt-/Speisersystem führt zu Lunkerbildung.`,
-          `Mangelhafte Schmelzqualität (Oxide, Verunreinigungen, hoher Wasserstoffgehalt) begünstigt Poren und Risse.`,
-          `Form- oder Kernverschleiß verursacht Maßabweichungen und Geometriefehler am ${title}.`,
-          `Fehlerhafte Kernmontage bzw. Kernversatz führt zu Wanddicken- und Lageabweichungen.`,
-          `Schwankungen bei Formstoffverdichtung oder Bindergehalt beeinträchtigen Oberflächenqualität und Maßhaltigkeit.`,
-          `Unzureichend überwachte Werkzeugtemperierung erzeugt Spannungen, Risse und Gefügeprobleme.`,
-          `Nicht freigegebene Prozessänderungen an Schmelzführung oder Ofenbetrieb wirken sich negativ auf das ${title} aus.`
+          `Prozessparameter außerhalb des freigegebenen Fensters.`,
+          `Werkzeugverschleiß oder ungeeigneter Vorrichtungszustand.`,
+          `Materialabweichung oder chargenabhängige Schwankung.`,
+          `Arbeitsfolge nicht eingehalten oder unklare Vorgabe.`,
+          `Prüfmerkmal wird nicht sicher erkannt oder abgesichert.`,
+          `Falschteil, Vertauschung oder unvollständige Ausführung.`,
+          `Fehlerhafte Einstellung von Maschine, Anlage oder Betriebsmittel.`,
+          `Unvollständige Rückverfolgbarkeit von Charge, Linie oder Schicht.`,
+          `Arbeitsanweisung nicht eindeutig oder nicht aktuell.`,
+          `Änderung im Prozess wurde nicht ausreichend abgesichert.`
         ],
         d5: [
-          `Gießparameter fenstern, dokumentieren und über Erstteilfreigaben sowie Prozessfreigaben absichern.`,
-          `Anschnitt- und Speisersystem anhand Simulation und Versuchsreihen optimieren und dokumentieren.`,
-          `Schmelzbehandlung (Entgasung, Reinigung, Filterung) standardisieren und lückenlos überwachen.`,
-          `Form- und Kernwerkzeuge überarbeiten oder ersetzen und klare Verschleißgrenzen definieren.`,
-          `Montagehilfen oder Poka‑Yoke‑Lösungen für korrekte Kernpositionen einführen und schulen.`,
-          `Prozessüberwachung für Formstoffqualität und Bindergehalt einführen und in Prüfplänen verankern.`,
-          `Werkzeug- und Formtemperierung stabilisieren, Messstellen definieren und Grenzwerte überwachen.`,
-          `Änderungsmanagement für Schmelz- und Gießprozess verbindlich einführen und auditieren.`
+          `Prozessparameter verbindlich festlegen und absichern.`,
+          `Werkzeug, Vorrichtung oder Anlage instand setzen oder ersetzen.`,
+          `Prüfplan und Grenzmuster an kritischen Merkmalen ergänzen.`,
+          `Arbeitsanweisung konkretisieren und eindeutig bebildern.`,
+          `Verwechslung oder Falschteile durch Poka-Yoke absichern.`,
+          `Materialfreigabe und Chargenlenkung verbessern.`,
+          `Prüfschritte an kritischen Merkmalen erweitern.`,
+          `Freigabekriterien für Serie und Änderung verbindlich festlegen.`,
+          `Verantwortlichkeiten und Reaktionsplan bei Abweichung definieren.`,
+          `Rückverfolgbarkeit im Prozess lückenlos sicherstellen.`
         ],
         d6: [
-          `Röntgen‑, CT‑ und Schliffbildauswertungen zeigen deutliche Reduktion von Poren und Lunkern im ${title}.`,
-          `Maßprüfungen belegen stabile Geometrie des ${title} im vereinbarten Toleranzfeld.`,
-          `Prozessfähigkeitsnachweise (Cp/Cpk) an kritischen Merkmalen des ${title} liegen vor.`,
-          `Ausschuss- und Nacharbeitsquoten für das ${title} sind im definierten Zielbereich stabil.`,
-          `Validierungslose über mehrere Schichten und Chargen zeigen keine Wiederholung des Fehlerbildes.`,
-          `Ofen- und Schmelzprotokolle sind vollständig, im Freigabefenster und werden regelmäßig ausgewertet.`,
-          `Kundenseitige Reklamationen zum betreffenden Gießfehlerbild des ${title} gehen deutlich zurück.`,
-          `Interne Audits bestätigen die wirksame Umsetzung und Einhaltung der neuen Vorgaben.`
+          `Prüfergebnisse zeigen stabile Erfüllung über den definierten Zeitraum.`,
+          `Messdaten vor und nach Maßnahme belegen eine deutliche Verbesserung.`,
+          `Keine Wiederholung des Fehlerbildes im Beobachtungszeitraum.`,
+          `Stichproben aus Folgechargen zeigen keinen erneuten Befund.`,
+          `Audit bestätigt Einhaltung der neuen Vorgaben.`,
+          `Trenddaten zeigen Rückgang von Ausschuss, Nacharbeit oder Reklamationen.`,
+          `Prozessdaten liegen innerhalb des festgelegten Fensters.`,
+          `Kundenseitige Verifikation oder Freigabe liegt vor.`,
+          `Zusatzprüfungen bestätigen die Wirksamkeit der Maßnahmen.`,
+          `Die dokumentierten Nachweise sind vollständig und nachvollziehbar.`
         ],
         d7: [
-          `PFMEA und Control Plan für den Gießprozess des ${title} werden um die erkannten Risiken erweitert.`,
-          `Arbeitsanweisungen für Schmelzführung, Gießen und Formherstellung werden aktualisiert und freigegeben.`,
-          `Regelmäßige Schulungen zu Schmelzqualität, Entgasung und Formpflege werden für das Personal eingeführt.`,
-          `Systematische Überwachung von Ofen‑, Schmelz‑ und Formstoffparametern wird im MES/Q‑System verankert.`,
-          `Freigabeprozesse für Werkzeug‑ und Formänderungen werden verbindlich dokumentiert und angewendet.`,
-          `Lessons Learned aus diesem Fall werden in künftige Projekte, Serienanläufe und Werkzeugkonzepte übernommen.`,
-          `Ein standardisiertes Bewertungsschema für Röntgen-/CT‑Bilder des ${title} wird definiert und geschult.`,
-          `Regelmäßige Prozess‑ und Schichtreviews zur Gussqualität des ${title} werden etabliert.`
+          `PFMEA und Control Plan mit den neuen Erkenntnissen aktualisieren.`,
+          `Arbeitsanweisungen und Prüfpläne dauerhaft anpassen.`,
+          `Lessons Learned in vergleichbare Produkte und Prozesse übernehmen.`,
+          `Änderungsmanagement für Prozess, Material und Werkzeug verbindlich machen.`,
+          `Layered Process Audits für kritische Prozessschritte einführen.`,
+          `Rückverfolgbarkeit auf Linie, Charge und Schicht absichern.`,
+          `Poka-Yoke und Freigabekriterien standardisieren.`,
+          `Schnittstellen zwischen Produktion, Qualität und Logistik verbessern.`,
+          `Kennzahlen zur Wiederholvermeidung regelmäßig bewerten.`,
+          `Erkannte Risiken systematisch in Standards und Vorgaben überführen.`
         ]
       };
     }
 
-    function makeZerspanenProfile(title) {
+    function makeMontageProfile(title) {
       return {
         d2: [
-          `Am ${title} wurden nach der Zerspanung relevante Maß- und Formabweichungen festgestellt.`,
-          `Oberflächen des ${title} zeigen Rattermarken, Riefen oder Gratbildung.`,
-          `Passungen und Dichtflächen des ${title} liegen außerhalb Toleranz und verursachen Montageprobleme.`,
-          `Fehler treten gehäuft an bestimmten Maschinen, Spannmitteln oder Werkzeugen auf.`,
-          `Prüfberichte zeigen Trends zunehmender Abweichungen am ${title} über mehrere Schichten.`,
-          `Der Nacharbeitsbedarf (Nachfräsen, Polieren, Entgraten) am ${title} steigt deutlich an.`,
-          `Messungen deuten auf Nullpunkt- oder Referenzfehler an der zerspanenden Maschine hin.`,
-          `Fehlerbilder korrelieren mit bestimmten NC‑Programmen oder nicht dokumentierten Programmänderungen.`
+          `Montagefehler, Funktionsabweichung oder Falschteil an ${title} gemeldet.`,
+          `Betroffene Teile zeigen fehlende, falsch montierte oder beschädigte Komponenten.`,
+          `Fehler tritt in Serie, Endprüfung oder beim Kunden auf.`,
+          `Problem betrifft bestimmte Lose, Schichten, Linien oder Montageplätze.`,
+          `Abweichung zeigt sich als Funktionsverlust, Spiel, Undichtheit oder Fehlposition.`,
+          `Fehlerbild ist über Sichtprüfung, Funktionsprüfung oder Endkontrolle nachvollziehbar.`,
+          `Bereits ausgelieferte Teile und Lagerbestände sind potenziell betroffen.`,
+          `Fehlerquote ist bei bestimmten Varianten oder Montagezuständen erhöht.`,
+          `Rückverfolgbarkeit zu Linie, Werker, Station und Charge ist erforderlich.`,
+          `Auswirkung: Reklamation, Nacharbeit, Ausfall oder Kundenbeanstandung.`
         ],
         d3: [
-          `Sperrung der betroffenen Produktionslose des ${title} und der zugehörigen NC‑Programme.`,
-          `100-%-Messung kritischer Maße an den auffälligen Merkmalen des ${title}.`,
-          `Umstellung auf definierte, referenzierte Werkzeug- und Spannmittelsets für das ${title}.`,
-          `Einführung zusätzlicher Zwischenprüfungen an Dichtflächen, Passungen und Funktionsmaßen.`,
-          `Dokumentation von Werkzeugstandzeiten, eingesetzten Parametern und verwendeten Werkzeugnummern.`,
-          `Sofortige Überprüfung der verwendeten Messmittel und Bezugsflächen für das ${title}.`,
-          `Verbot temporärer NC‑Programmänderungen ohne schriftliche Freigabe.`,
-          `Einsatz erfahrener Bediener auf den kritischen Maschinen, die das ${title} bearbeiten.`
+          `Sofortige Sperrung und Kennzeichnung aller betroffenen Bestände.`,
+          `100%-Kontrolle auf Vollständigkeit, Lage, Verrastung und korrekte Ausführung.`,
+          `Sortieraktion an Lager-, Versand- und Linienbeständen.`,
+          `Kundeninformation mit Risikobewertung und Eindämmmaßnahmen.`,
+          `Freigabe nur nach dokumentierter Zusatzprüfung.`,
+          `Temporäre Zusatzkontrolle an kritischen Montagepositionen.`,
+          `Prüfung von Vorrichtung, Werkzeug und Arbeitsfolge.`,
+          `Quarantäne bereits identifizierter Verdachtslose.`,
+          `Tägliches Reporting bis zur abgesicherten Abstellung.`,
+          `Eindämmung bleibt aktiv bis Ursachen- und Wirksamkeitsnachweis vorliegt.`
         ],
         d4: [
-          `Werkzeugverschleiß oder falsche Werkzeugauswahl führt zu systematischen Maßabweichungen am ${title}.`,
-          `Fehlerhafte Nullpunkt- oder Werkstückoffset‑Einstellung an der Maschine verursacht Lagefehler.`,
-          `Unzureichende Spannkonzepte führen zu Verzug und Maßdrift am ${title} während der Bearbeitung.`,
-          `Kühlschmierstoffzustand oder ‑zufuhr (Temperatur, Druck, Sauberkeit) ist unzureichend und beeinflusst die Oberflächenqualität.`,
-          `NC‑Programmfehler oder unkoordinierte Programmänderungen erzeugen falsche Konturen oder Bearbeitungspfade.`,
-          `Thermische Einflüsse (Aufwärmverhalten von Maschine und Werkstück) wurden in der Prozessauslegung nicht berücksichtigt.`,
-          `Messmittel sind nicht kalibriert oder werden nicht bestimmungsgemäß eingesetzt.`,
-          `Rohteilmaße oder ‑lagen des ${title} schwanken stärker als im Prozesskonzept vorgesehen.`
+          `Falschteil montiert oder Bauteil verwechselt.`,
+          `Bauteil nicht vollständig montiert.`,
+          `Montagereihenfolge nicht eingehalten.`,
+          `Verrastung, Verschraubung oder Verbindung nicht vollständig ausgeführt.`,
+          `Drehmoment, Einpresskraft oder Fügekraft außerhalb Vorgabe.`,
+          `Montagevorrichtung fehlerhaft eingestellt oder verschlissen.`,
+          `Arbeitsanweisung unklar oder nicht aktuell.`,
+          `Poka-Yoke fehlt oder ist unwirksam.`,
+          `Merkmale werden in der Endprüfung nicht sicher erkannt.`,
+          `Rückverfolgbarkeit von Schicht, Linie oder Station ist unvollständig.`
         ],
         d5: [
-          `Werkzeugdatenbank und Standzeiterfassung einführen, inklusive klarer Wechselkriterien für kritische Werkzeuge.`,
-          `Standardisiertes Einrichten und Vermessen der Werkzeuge mit Checklisten und Prüfplänen einführen.`,
-          `Spannkonzept für das ${title} optimieren (Zusatzauflagen, Stützpunkte, Spannreihenfolge).`,
-          `Kühlschmierstoffmanagement (Konzentration, Filtration, Temperatur) definieren und überwachen.`,
-          `NC‑Programme verifizieren, simulieren und einem verbindlichen Änderungsmanagement unterwerfen.`,
-          `Thermische Stabilisierung durch definierte Aufwärm- und Rüstprozesse festlegen.`,
-          `Messmittelverwaltung mit Kalibrierintervallen, Einsatzfreigabe und Rückverfolgbarkeit etablieren.`,
-          `Rohteil- und Vormaterialtoleranzen mit Kunde/Lieferant abstimmen und im Prozess berücksichtigen.`
+          `Montagereihenfolge verbindlich definieren und standardisieren.`,
+          `Poka-Yoke gegen Verwechslung oder Fehlmontage ergänzen.`,
+          `Drehmoment- bzw. Fügekraftüberwachung einführen oder verschärfen.`,
+          `Montagevorrichtung einstellen, instand setzen oder ersetzen.`,
+          `Arbeitsanweisung bebildert und eindeutig aktualisieren.`,
+          `Freigabekriterien für Vollständigkeit und korrekte Lage festlegen.`,
+          `Zusätzliche Anwesenheits- oder Lageprüfung integrieren.`,
+          `Teilebereitstellung und Materialtrennung gegen Mix-up absichern.`,
+          `Prüfmerkmale für Endkontrolle erweitern.`,
+          `Verantwortlichkeiten und Reaktionsplan bei Abweichung festlegen.`
         ],
         d6: [
-          `Messreihen vor und nach Umsetzung der Maßnahmen zeigen signifikante Verbesserung der Maßhaltigkeit am ${title}.`,
-          `Cp- und Cpk‑Werte an kritischen Merkmalen des ${title} liegen stabil über den geforderten Grenzwerten.`,
-          `Ausschuss- und Nacharbeitsquoten für das ${title} gehen im definierten Beobachtungszeitraum deutlich zurück.`,
-          `Prozessfähigkeitsdaten (SPC) über mehrere Schichten und Lose sind stabil und ohne Trends.`,
-          `Audit der Rüst‑, Spann‑ und Vermessungsprozesse bestätigt die Einhaltung der neuen Vorgaben.`,
-          `Kühlschmierstoff- und Werkzeugstandzeitdaten werden lückenlos erfasst und ausgewertet.`,
-          `Rückmeldungen aus Montage und Endprüfung zeigen keine Passungs- oder Dichtheitsprobleme mehr.`,
-          `Kundenreklamationen zum betrachteten Zerspanungsfehlerbild des ${title} bleiben aus.`
+          `100%-Prüfung und Serienbeobachtung zeigen keinen erneuten Fehler.`,
+          `Funktionsprüfung bestätigt stabile Wirksamkeit.`,
+          `Audit an Linie und Station bestätigt Einhaltung der neuen Vorgaben.`,
+          `Trenddaten zeigen deutlichen Rückgang von Fehlern und Nacharbeit.`,
+          `Prüfprotokolle bestätigen korrekte Montageausführung.`,
+          `Keine Wiederholung im definierten Beobachtungszeitraum.`,
+          `Kundenseitige Verifikation oder Freigabe liegt vor.`,
+          `Prozessdaten zu Drehmoment oder Fügekraft liegen im Sollbereich.`,
+          `Stichproben aus Folgechargen ohne Befund.`,
+          `Wirksamkeit ist dokumentiert und nachvollziehbar freigegeben.`
         ],
         d7: [
-          `PFMEA und Control Plan für die Zerspanprozesse des ${title} werden um die neuen Fehlerursachen ergänzt.`,
-          `Standardisierte Rüst- und Vermessungsanweisungen werden erstellt, veröffentlicht und geschult.`,
-          `Regelmäßige Schulungen für Bediener zu Werkzeugstandzeit, Messmittelhandhabung und Spanntechnik eingeführt.`,
-          `Layered Process Audits an kritischen Maschinen und Prozessen für das ${title} etabliert.`,
-          `NC‑Änderungsmanagement mit Freigabe durch Qualität und Prozessplanung verbindlich eingeführt.`,
-          `Werkzeug- und Spannmittelstrategien werden in der Technologie- und Investitionsplanung berücksichtigt.`,
-          `Lessons Learned aus diesem Fall werden in zukünftige Projekte und Bearbeitungskonzepte eingebracht.`,
-          `Monitoring von Prozessdaten (z. B. Werkzeugbruchüberwachung, Achslasten) im MES‑System aktiviert.`
+          `PFMEA und Control Plan für den Montageprozess aktualisieren.`,
+          `Arbeitsanweisungen und Prüfpläne dauerhaft anpassen.`,
+          `Poka-Yoke-Konzept standardisieren.`,
+          `Layered Process Audit für kritische Montageschritte einführen.`,
+          `Freigabeprozess bei Änderungen an Teilen, Vorrichtung oder Ablauf definieren.`,
+          `Lessons Learned in ähnliche Produkte und Linien übertragen.`,
+          `Rückverfolgbarkeit auf Linie, Station und Schicht absichern.`,
+          `Prüfkonzept für Vollständigkeit und Lage standardisieren.`,
+          `Schnittstelle zwischen Logistik, Montage und Qualität absichern.`,
+          `Wiederholfehler über Kennzahlen regelmäßig bewerten.`
         ]
       };
     }
 
-    function makeStanzenProfile(title) {
-      return {
-        d2: [
-          `Beim ${title} treten Gratbildung, Ausbrüche oder deformierte Schnittkanten nach dem Stanzen auf.`,
-          `Maß- und Lageabweichungen an gestanzten Konturen des ${title} werden festgestellt.`,
-          `Lochbilder und Aussparungen des ${title} sind außer Toleranz und verursachen Montageprobleme.`,
-          `Fehler häufen sich bei bestimmten Werkzeugen, Pressen oder Streifenbreiten.`,
-          `Materialrisse oder Einzüge am Randbereich des ${title} werden beobachtet.`,
-          `Ausschuss- und Nacharbeitsquoten (Entgraten, Richten) für das ${title} steigen deutlich an.`,
-          `Fehlerbilder korrelieren mit bestimmten Materialchargen oder Blechdicken.`,
-          `Unregelmäßigkeiten im Vorschub oder Bandverlauf verursachen Wiederholfehler am ${title}.`
-        ],
-        d3: [
-          `Sofortige Sperrung der betroffenen Stanzlose des ${title} und Kennzeichnung der Streifen.`,
-          `100-%-Kontrolle kritischer gestanzter Konturen und Lochbilder am ${title}.`,
-          `Zuordnung der Fehlerteile zu konkreten Werkzeugnummern, Pressen und Materialchargen.`,
-          `Reduzierung der Pressengeschwindigkeit und Anpassung der Hubzahl zur kurzfristigen Stabilisierung.`,
-          `Visuelle Prüfung von Werkzeugschneiden und Führungen auf Beschädigung oder Verschleiß.`,
-          `Separierung auffälliger Materialchargen und Sperrung bis zur Klärung.`,
-          `Zusätzliche Zwischenprüfungen (Maß, Grat, Ebenheit) im Prozess für das ${title} einführen.`,
-          `Dokumentation der aktuellen Werkzeug‑, Pressen‑ und Materialeinstellungen als Ist‑Status.`
-        ],
-        d4: [
-          `Werkzeugverschleiß oder ‑beschädigung (Stempel, Matrize) verursacht Grat, Ausbrüche und Maßabweichungen.`,
-          `Fehlerhafte Einstellung von Schneidspalt und Niederhalter führt zu unsauberen Schnittflächen am ${title}.`,
-          `Bandführung und Vorschub sind unzureichend eingestellt, was Lagefehler und Doppelhübe erzeugt.`,
-          `Materialeigenschaften (Festigkeit, Zugfestigkeit, Beschichtung) weichen von der Spezifikation ab.`,
-          `Unzureichende Schmierung oder falsches Zieh-/Stanzöl verursacht Fressmarken und Oberflächenfehler.`,
-          `Pressenparameter (Hubzahl, Kraft, Spiel) sind nicht an Werkzeug und Material angepasst.`,
-          `Werkzeug- und Streifenreinigung findet nicht in ausreichender Frequenz statt.`,
-          `Nicht dokumentierte Änderungen an Werkzeug oder Prozessparametern wurden durchgeführt.`
-        ],
-        d5: [
-          `Werkzeuge überarbeiten, Schneidkanten nachschleifen bzw. austauschen und Verschleißgrenzen definieren.`,
-          `Schneidspalt, Niederhalterkraft und Werkzeughöhe für das ${title} gemäß Versuchsergebnissen einstellen.`,
-          `Bandführung, Vorschubsystem und Zentrierung optimieren und mit Einstellplänen dokumentieren.`,
-          `Materialfreigabeprozess mit Eingangskontrolle zu Festigkeit, Dicke und Beschichtung stärken.`,
-          `Geeignete Schmierstoffe auswählen, Auftragssystem optimieren und im Prozess überwachen.`,
-          `Pressenparameter an Werkzeug‑/Materialkombination anpassen und in Datensätzen hinterlegen.`,
-          `Reinigungsintervalle für Werkzeuge, Streifenführungen und Auflagen definieren und standardisieren.`,
-          `Änderungsmanagement für Stanzwerkzeuge und Prozessparameter verbindlich einführen.`
-        ],
-        d6: [
-          `Messreihen an gestanzten Konturen des ${title} zeigen stabile Maß‑ und Lagewerte im Toleranzfeld.`,
-          `Grat- und Ausbruchsbewertungen belegen eine deutliche Reduktion der Oberflächenfehler.`,
-          `Ausschuss- und Nacharbeitsquoten (Entgraten, Richten) liegen im definierten Zielbereich.`,
-          `Prozessfähigkeitskennzahlen (Cp/Cpk) für kritische Stanzmerkmale des ${title} werden nachgewiesen.`,
-          `Langzeitbeobachtungen über mehrere Materialchargen bestätigen die Stabilität des Prozesses.`,
-          `Interne Audits prüfen Werkzeugzustand, Einstelldaten und Wartungsintervalle mit positivem Ergebnis.`,
-          `Reklamationen des Kunden bezüglich Stanzfehlern am ${title} gehen deutlich zurück.`,
-          `Kennzahlen aus SPC‑ oder QS‑System zeigen keine systematischen Trends oder Ausreißer mehr.`
-        ],
-        d7: [
-          `PFMEA und Control Plan für die Stanzprozesse des ${title} werden um die erkannten Risiken ergänzt.`,
-          `Standardisierte Einstell- und Wartungsanweisungen für Stanzwerkzeuge und Pressen werden erstellt.`,
-          `Schulungen für Einrichter und Bediener zu Werkzeugverschleiß, Bandführung und Schmierung eingeführt.`,
-          `Regelmäßige Werkzeug- und Prozessreviews mit Auswertung der Stanzqualität etabliert.`,
-          `Ein systematisches Wartungs- und Instandhaltungskonzept für Pressen und Werkzeuge wird umgesetzt.`,
-          `Materialanforderungen (z. B. Festigkeit, Oberflächenbeschaffenheit) werden verbindlich im Einkauf verankert.`,
-          `Lessons Learned aus diesem Stanzfall werden in zukünftige Werkzeug- und Projektplanungen übernommen.`,
-          `Ein Kennzahlensystem zur Überwachung von Ausschuss, Nacharbeit und Werkzeugzustand wird eingeführt.`
-        ]
-      };
+    const processLibrary = {
+      giessen: makeGenericProfile('Gießen'),
+      zerspanen: makeGenericProfile('Zerspanen'),
+      schmieden: makeGenericProfile('Schmieden'),
+      montage: makeMontageProfile('Montage'),
+      kunststoffspritzguss: makeGenericProfile('Kunststoffspritzguss'),
+      aludruckguss: makeGenericProfile('Alu-Druckguss')
+    };
+
+    const i18n = {
+      de: {
+        summaryHeadline: 'Ergebniszusammenfassung aktuelles Dokument',
+        summaryCustomer: 'Kunde:',
+        summaryProcess: 'Fertigungstechnik:',
+        summaryLevel: 'Level:',
+        summarySeverity: 'Schweregrad:',
+        summaryAmpel: 'Gesamtbewertung:',
+        evalCritical: 'kritisch – wesentliche Anforderungen sind nicht erfüllt; 8D-Report ist in dieser Form nicht freigabefähig.',
+        evalBorderline: 'grenzwertig – wichtige Anforderungen sind nur teilweise erfüllt; 8D-Report sollte überarbeitet und ergänzt werden.',
+        evalPlausible: 'plausibel – wesentliche Anforderungen sind weitgehend erfüllt; 8D-Report ist grundsätzlich akzeptabel.',
+        evalNotAssessed: 'nicht bewertet – es liegen keine auswertbaren Informationen vor.',
+        colorRedText: '<span class="ampel-rot">Rot</span>',
+        colorYellowText: '<span class="ampel-gelb">Gelb</span>',
+        colorGreenText: '<span class="ampel-gruen">Grün</span>'
+      },
+      en: {
+        summaryHeadline: 'Result summary current document',
+        summaryCustomer: 'Customer:',
+        summaryProcess: 'Manufacturing process:',
+        summaryLevel: 'Level:',
+        summarySeverity: 'Severity:',
+        summaryAmpel: 'Overall rating:',
+        evalCritical: 'critical – major requirements are not fulfilled; the 8D report is not releasable in its current form.',
+        evalBorderline: 'borderline – important requirements are only partially fulfilled; the 8D report should be revised and completed.',
+        evalPlausible: 'plausible – major requirements are largely fulfilled; the 8D report is basically acceptable.',
+        evalNotAssessed: 'not assessed – no assessable information is available.',
+        colorRedText: '<span class="ampel-rot">Red</span>',
+        colorYellowText: '<span class="ampel-gelb">Yellow</span>',
+        colorGreenText: '<span class="ampel-gruen">Green</span>'
+      }
+    };
+
+    const helpTexts = {
+      de: {
+        customerName: 'Name des OEM oder Tier‑1 Kunden, für den der 8D‑Report erstellt wird.',
+        customerLogoUrl: 'Direkte URL zum Kundenlogo.',
+        language: 'Steuert die Anzeige der UI‑Texte (DE/EN).',
+        fertigungstechnik: 'Wähle die passende Fertigungstechnik des reklamierten Bauteils.',
+        level: 'Entry: Basischecks; Advanced: strengere Plausibilität; Automotive: OEM/VDA-Standard mit höchster Strenge.',
+        severity: 'Schweregrad der Auswirkung beim Kunden: von internem Problem (S1) bis sicherheits-/gesetzkritisch (S4).'
+      },
+      en: {
+        customerName: 'Name of the OEM or Tier‑1 customer for whom the 8D report is created.',
+        customerLogoUrl: 'Direct URL to the customer logo.',
+        language: 'Controls the UI language (DE/EN).',
+        fertigungstechnik: 'Select the manufacturing process of the rejected part.',
+        level: 'Entry: basic checks; Advanced: stricter plausibility; Automotive: OEM/VDA standard with highest strictness.',
+        severity: 'Severity of customer impact: from internal issue (S1) to safety/legally critical (S4).'
+      }
+    };
+
+    function getLang() {
+      return document.getElementById('language')?.value || 'de';
     }
 
-    /* Auswahl je nach Fertigungstechnik */
-    function getProfileForSelection() {
-      const ft = document.getElementById("fertigungstechnik").value;
-      const customTitleInput = document.getElementById("customTitle");
-      const title = customTitleInput && customTitleInput.value.trim()
-        ? customTitleInput.value.trim()
-        : "Bauteil / Produkt";
+    function applyLanguage() {
+      document.title = '8D Creator';
+      const titleMain = document.getElementById('titleMain');
+      if (titleMain) titleMain.textContent = '8D Creator';
+      renderSummary(null);
+    }
 
-      switch (ft) {
-        case "giessen":
-          return makeGiessenProfile(title);
-        case "zerspanen":
-          return makeZerspanenProfile(title);
-        case "stanzen":
-          return makeStanzenProfile(title);
-        default:
-          return { d2: [], d3: [], d4: [], d5: [], d6: [], d7: [] };
+    function saveCustomerConfig() {
+      const cfg = {
+        name: document.getElementById('customerName').value.trim(),
+        logo: document.getElementById('customerLogoUrl').value.trim()
+      };
+      try {
+        localStorage.setItem('qchecker_customer', JSON.stringify(cfg));
+      } catch (e) {}
+      applyCustomerConfig(cfg);
+    }
+
+    function applyCustomerConfig(prefillCfg = null) {
+      let cfg = prefillCfg;
+
+      if (!cfg) {
+        try {
+          const raw = localStorage.getItem('qchecker_customer');
+          if (raw) cfg = JSON.parse(raw);
+        } catch (e) {}
+      }
+
+      const box = document.getElementById('customerLogoBox');
+      if (!box) return;
+      box.innerHTML = '';
+
+      if (cfg && (cfg.logo || cfg.name)) {
+        const wrapper = document.createElement('div');
+
+        if (cfg.logo) {
+          const img = document.createElement('img');
+          img.src = cfg.logo;
+          img.alt = cfg.name || 'Customer logo';
+          wrapper.appendChild(img);
+        }
+
+        if (cfg.name) {
+          const info = document.createElement('small');
+          info.textContent = cfg.name;
+          wrapper.appendChild(info);
+        }
+
+        box.appendChild(wrapper);
+
+        document.getElementById('customerName').value = cfg.name || '';
+        document.getElementById('customerLogoUrl').value = cfg.logo || '';
       }
     }
 
-    function fillSelectFromArray(selectId, arr) {
-      const sel = document.getElementById(selectId);
-      if (!sel) return;
-      sel.innerHTML = '<option value="">– Vorschlag auswählen –</option>';
-      arr.forEach((text, idx) => {
-        const opt = document.createElement("option");
-        opt.value = text;
-        opt.textContent = `${idx + 1}. ${text}`;
-        sel.appendChild(opt);
+    function getColoredAmpelText(ampel) {
+      const t = i18n[getLang()] || i18n.de;
+      if (ampel === 'Rot') return t.colorRedText;
+      if (ampel === 'Gelb') return t.colorYellowText;
+      if (ampel === 'Grün') return t.colorGreenText;
+      return '';
+    }
+
+    function getVerbaleBewertung(ampel) {
+      const t = i18n[getLang()] || i18n.de;
+      if (ampel === 'Rot') return t.evalCritical;
+      if (ampel === 'Gelb') return t.evalBorderline;
+      if (ampel === 'Grün') return t.evalPlausible;
+      return t.evalNotAssessed;
+    }
+
+    function haveCommonKeyword(txt1, txt2) {
+      const stop = ['der','die','das','und','oder','mit','auf','in','von','für','the','and','of','to','in'];
+      const words1 = txt1.split(/[^a-zäöüß0-9]+/i).filter(w => w.length > 3 && !stop.includes(w.toLowerCase()));
+      const words2 = txt2.split(/[^a-zäöüß0-9]+/i).filter(w => w.length > 3 && !stop.includes(w.toLowerCase()));
+      return words1.some(w => words2.some(w2 => w2.toLowerCase() === w.toLowerCase()));
+    }
+
+    function setFieldStatus(textareaId, status, tooltipText) {
+      const el = document.getElementById(textareaId);
+      if (!el) return;
+      el.classList.remove('text-ok', 'text-warn', 'text-error');
+
+      if (tooltipText && tooltipText.length > 0) el.title = tooltipText;
+      else el.removeAttribute('title');
+
+      if (status === 'ok') el.classList.add('text-ok');
+      if (status === 'warn') el.classList.add('text-warn');
+      if (status === 'error') el.classList.add('text-error');
+    }
+
+    function getProcessTexts(ftKey) {
+      return processLibrary[ftKey] || null;
+    }
+
+    function checkCurrentDocument() {
+      const level = document.getElementById('level').value || 'entry';
+      const severity = document.getElementById('severity').value || '';
+      const d4 = (document.getElementById('d4_text')?.value || '').trim();
+      const d5 = (document.getElementById('d5_text')?.value || '').trim();
+      const d6 = (document.getElementById('d6_text')?.value || '').trim();
+      const d7 = (document.getElementById('d7_text')?.value || '').trim();
+
+      const minLen = level === 'entry' ? 10 : 23;
+      let status = 'Grün';
+      const globalHints = [];
+      const fieldStatus = {
+        D4: { state: 'ok', errors: [] },
+        D5: { state: 'ok', errors: [] },
+        D6: { state: 'ok', errors: [] },
+        D7: { state: 'ok', errors: [] }
+      };
+
+      if (!severity) {
+        status = 'Gelb';
+        globalHints.push('IDX-00: Schweregrad/Severity ist nicht gewählt – bitte auswählen (S1–S4).');
+      }
+
+      [['D4', d4], ['D5', d5], ['D6', d6], ['D7', d7]].forEach(([name, txt]) => {
+        if (txt.length > 0 && txt.length < minLen) {
+          if (status !== 'Rot') status = 'Gelb';
+          const msg = `IDX-LEN-${name}: ${name}: Text kürzer als ${minLen} Zeichen – bitte konkretisieren.`;
+          fieldStatus[name].errors.push(msg);
+          fieldStatus[name].state = 'warn';
+          globalHints.push(msg);
+        }
       });
+
+      const highSeverity = severity === 'S3' || severity === 'S4';
+
+      if (level === 'automotive') {
+        [['D5', d5], ['D6', d6], ['D7', d7]].forEach(([name, txt]) => {
+          const low = txt.toLowerCase();
+          if (low.includes('schulung') || low.includes('training')) {
+            const lenLimit = highSeverity ? 120 : 80;
+            if (txt.length < lenLimit) {
+              status = 'Rot';
+              const msg = `IDX-SCH-${name}: ${name}: „Schulung" alleine ist im Automotive‑Kontext${highSeverity ? ' und hohem Schweregrad ' : ' '}als Maßnahme No‑Go – bitte technische Maßnahmen und Nachweise ergänzen.`;
+              fieldStatus[name].errors.push(msg);
+              fieldStatus[name].state = 'error';
+              globalHints.push(msg);
+            }
+          }
+        });
+      }
+
+      if (d4.length >= 10) {
+        [['D5', d5], ['D6', d6], ['D7', d7]].forEach(([name, txt]) => {
+          if (!txt) return;
+          if (!haveCommonKeyword(d4, txt)) {
+            if (level === 'automotive') {
+              if (highSeverity) status = 'Rot';
+              else if (status !== 'Rot') status = 'Gelb';
+              const msg = `IDX-REF-${name}: ${name}: Maßnahmen passen nicht erkennbar zur in D4 beschriebenen Ursache – bitte klaren Bezug zur Root Cause herstellen${highSeverity ? ' (bei hohem Schweregrad zwingend)' : ''}.`;
+              fieldStatus[name].errors.push(msg);
+              fieldStatus[name].state = highSeverity ? 'error' : 'warn';
+              globalHints.push(msg);
+            } else if (level === 'advanced') {
+              if (status !== 'Rot') status = 'Gelb';
+              const msg = `IDX-REF-${name}: ${name}: Bitte Bezug zu D4-Ursache deutlicher darstellen.`;
+              fieldStatus[name].errors.push(msg);
+              fieldStatus[name].state = 'warn';
+              globalHints.push(msg);
+            } else {
+              const msg = `IDX-REF-${name}: ${name}: Prüfe, ob die Maßnahme klar zur D4-Ursache passt.`;
+              fieldStatus[name].errors.push(msg);
+              if (fieldStatus[name].state === 'ok') fieldStatus[name].state = 'warn';
+              globalHints.push(msg);
+            }
+          }
+        });
+      }
+
+      setFieldStatus('d4_text', fieldStatus.D4.state, fieldStatus.D4.errors.slice(0, 3).join('\n'));
+      setFieldStatus('d5_text', fieldStatus.D5.state, fieldStatus.D5.errors.slice(0, 3).join('\n'));
+      setFieldStatus('d6_text', fieldStatus.D6.state, fieldStatus.D6.errors.slice(0, 3).join('\n'));
+      setFieldStatus('d7_text', fieldStatus.D7.state, fieldStatus.D7.errors.slice(0, 3).join('\n'));
+
+      renderSummary(status);
+      alert(globalHints.length ? 'Plausibilitätscheck aktuelles Dokument:\n\n' + globalHints.join('\n') : 'Plausibilitätscheck: Keine Beanstandungen gefunden.');
+    }
+
+    function renderSummary(ampel) {
+      const t = i18n[getLang()] || i18n.de;
+      const box = document.getElementById('resultSummary');
+      if (!box) return;
+
+      let cfg = null;
+      try {
+        const cfgRaw = localStorage.getItem('qchecker_customer');
+        if (cfgRaw) cfg = JSON.parse(cfgRaw);
+      } catch (e) {}
+
+      const customerName = cfg && cfg.name ? cfg.name : '–';
+      const fert = document.getElementById('fertigungstechnik').value || '–';
+      const level = document.getElementById('level').value || 'entry';
+      const severity = document.getElementById('severity').value || '–';
+
+      const ampelHtml = ampel ? getColoredAmpelText(ampel) : '';
+      const evalText = ampel ? getVerbaleBewertung(ampel) : t.evalNotAssessed;
+
+      box.innerHTML = `
+        <h2>${t.summaryHeadline}</h2>
+        <p>
+          ${t.summaryCustomer} ${customerName}<br>
+          ${t.summaryProcess} ${fert}<br>
+          ${t.summaryLevel} ${level}<br>
+          ${t.summarySeverity} ${severity}<br>
+          ${t.summaryAmpel} ${ampelHtml}
+        </p>
+        <p>${evalText}</p>
+      `;
+    }
+
+    function showHelp(key) {
+      const texts = helpTexts[getLang()] || helpTexts.de;
+      const msg = texts[key] || '';
+      const box = document.getElementById('helpBubble');
+      if (!box) return;
+
+      if (!msg) {
+        box.style.display = 'none';
+        return;
+      }
+
+      box.style.display = 'block';
+      box.innerHTML = `
+        <div id="helpBubbleHeader">
+          <strong>Info / Help: ${key}</strong>
+          <button type="button" onclick="hideHelp()">X</button>
+        </div>
+        <p>${msg}</p>
+      `;
+    }
+
+    function hideHelp() {
+      const box = document.getElementById('helpBubble');
+      if (box) box.style.display = 'none';
     }
 
     function populatePullDownsForFt() {
-      const profile = getProfileForSelection();
-      fillSelectFromArray("d2select", profile.d2 || []);
-      fillSelectFromArray("d3select", profile.d3 || []);
-      fillSelectFromArray("d4select", profile.d4 || []);
-      fillSelectFromArray("d5select", profile.d5 || []);
-      fillSelectFromArray("d6select", profile.d6 || []);
-      fillSelectFromArray("d7select", profile.d7 || []);
+      const ft = document.getElementById('fertigungstechnik').value;
+      const severity = document.getElementById('severity').value || 'S1';
+      const level = document.getElementById('level').value || 'entry';
+      const cfg = getProcessTexts(ft);
+      const map = {
+        d2: 'd2_select',
+        d3: 'd3_select',
+        d4: 'd4_select',
+        d5: 'd5_select',
+        d6: 'd6_select',
+        d7: 'd7_select'
+      };
+
+      let maxCount = 5;
+      if (level === 'advanced') maxCount = 8;
+      if (level === 'automotive') maxCount = 12;
+      if (severity === 'S3') maxCount = Math.min(maxCount + 2, 15);
+      if (severity === 'S4') maxCount = Math.min(maxCount + 4, 15);
+
+      Object.keys(map).forEach(dKey => {
+        const sel = document.getElementById(map[dKey]);
+        if (!sel) return;
+
+        sel.innerHTML = '<option value="">– Vorschlag auswählen –</option>';
+
+        if (dKey === 'd3') {
+          const d3Options = [
+            'Sofortige Sperrung und Kennzeichnung aller Bestände.',
+            '100%-Kontrolle der betroffenen Merkmale.',
+            'Kundeninformation und Quarantäne.',
+            'Sortieraktion und Freigabe nur nach dokumentierter Prüfung.',
+            'Tägliches Reporting bis zur Freigabe der Abstellmaßnahmen.'
+          ];
+
+          const d3Count = severity === 'S4' ? 5 : severity === 'S3' ? 4 : severity === 'S2' ? 3 : 2;
+
+          d3Options.slice(0, d3Count).forEach(text => {
+            const opt = document.createElement('option');
+            opt.value = text;
+            opt.textContent = text;
+            sel.appendChild(opt);
+          });
+        }
+
+        if (!cfg) return;
+        const texts = cfg[dKey];
+
+        if (texts) {
+          texts.slice(0, maxCount).forEach(text => {
+            const opt = document.createElement('option');
+            opt.value = text;
+            opt.textContent = text;
+            sel.appendChild(opt);
+          });
+        }
+      });
     }
 
     function insertHintIntoField(selectId, textareaId) {
       const sel = document.getElementById(selectId);
-      const txt = document.getElementById(textareaId);
-      if (!sel || !txt) return;
+      const ta = document.getElementById(textareaId);
+      if (!sel || !ta) return;
+
       const val = sel.value;
       if (!val) return;
 
-      if (txt.value && !txt.value.endsWith("\n")) {
-        txt.value += "\n";
-      }
-      txt.value += val;
+      if (ta.value && !ta.value.endsWith('\n')) ta.value += '\n';
+      ta.value += val;
+      sel.selectedIndex = 0;
     }
 
-    function applyLanguage() {
-      // aktuell nur Deutsch – Platzhalter
+    function init() {
+      applyCustomerConfig();
+      applyLanguage();
+      populatePullDownsForFt();
+
+      document.getElementById('fertigungstechnik').addEventListener('change', populatePullDownsForFt);
+      document.getElementById('level').addEventListener('change', populatePullDownsForFt);
+      document.getElementById('severity').addEventListener('change', populatePullDownsForFt);
+
+      document.querySelectorAll('.help-icon').forEach(el => {
+        el.addEventListener('click', () => showHelp(el.dataset.helpKey));
+      });
+
+      renderSummary(null);
     }
 
-    function checkCurrentDocument() {
-      const severity = (document.getElementById("severity").value || "").trim();
-      const level = (document.getElementById("level").value || "").trim();
-      const fertigungstechnik = (document.getElementById("fertigungstechnik").value || "").trim();
-      const d2 = (document.getElementById("d2text").value || "").trim();
-      const d3 = (document.getElementById("d3text").value || "").trim();
-      const d4 = (document.getElementById("d4text").value || "").trim();
-      const d5 = (document.getElementById("d5text").value || "").trim();
-      const d6 = (document.getElementById("d6text").value || "").trim();
-      const d7 = (document.getElementById("d7text").value || "").trim();
-
-      let score = 0;
-      let messages = [];
-
-      if (!severity) {
-        messages.push("Schweregrad ist nicht ausgewählt.");
-      } else {
-        score += 1;
-      }
-
-      if (!fertigungstechnik) {
-        messages.push("Fertigungstechnik ist nicht ausgewählt.");
-      } else {
-        score += 1;
-      }
-
-      if (d2.length < 50) {
-        messages.push("D2 ist sehr kurz. Nutze eine strukturierte Problembeschreibung (Wer / Was / Wo / Wann / Wie viel).");
-      } else {
-        score += 2;
-      }
-
-      if (!d3) {
-        messages.push("D3 ist leer. Beschreibe deine Eindämmmaßnahmen.");
-      } else {
-        score += 2;
-      }
-
-      if (!d4) {
-        messages.push("D4 ist leer. Beschreibe die technische Ursache.");
-      } else {
-        score += 3;
-      }
-
-      if (!d5) {
-        messages.push("D5 ist leer. Leite konkrete Abstellmaßnahmen aus der Ursache ab.");
-      } else {
-        score += 3;
-      }
-
-      if (!d6) {
-        messages.push("D6 ist leer. Beschreibe, wie die Wirksamkeit nachgewiesen wird.");
-      } else {
-        score += 2;
-      }
-
-      if (!d7) {
-        messages.push("D7 ist leer. Beschreibe Systemmaßnahmen zur Wiederholvermeidung.");
-      } else {
-        score += 2;
-      }
-
-      let ampel = "";
-      if (score >= 12) {
-        ampel = '<span class="ampel-gruen">Grün: 8D ist inhaltlich gut gefüllt.</span>';
-      } else if (score >= 8) {
-        ampel = '<span class="ampel-gelb">Gelb: 8D ist teilweise gefüllt, es gibt noch Lücken.</span>';
-      } else {
-        ampel = '<span class="ampel-rot">Rot: 8D hat wesentliche Lücken. Bitte weiter ausarbeiten.</span>';
-      }
-
-      const result = document.getElementById("resultSummary");
-      result.innerHTML = `
-        <p>${ampel}</p>
-        <ul>${messages.map(m => `<li>${m}</li>`).join("")}</ul>
-      `;
-    }
+    window.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
 </html>
- 
